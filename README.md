@@ -41,6 +41,20 @@ Exit with `Ctrl+C`
 
 If we don't want to have to add the `npm start` suffix to the `docker run` command, we can add this to the `Dockerfile`
 
+`--name` option let's us assign the name of a container ourselves
+
+#### Detached Mode
+Can run containers in detached mode (in the background) such that you can still work in the terminal
+`docker run -d react-app`
+This let's us spin up multiple containers in the background using the same terminal
+
+#### Container Logs
+`docker logs --help`
+The `-f` option to follow lets us see logs in real-time
+`-n` let's us see the last `n` lines
+`docker logs -n 10 <identifier>`
+`-t` adds timestamps to each line
+
 ### Ports
 Having run `npm start` we see
 
@@ -49,6 +63,17 @@ Having run `npm start` we see
   On Your Network:  http://172.17.0.2:3000
 ```
 By looking at Local, we see that the webserver started on port 3000. This is port 3000 of the container, not localhost. That means, if we go to this address in the browser, we won't see our application.
+
+`docker run -d -p <host port>:<container port> --name <container name> <id>`
+`docker run -d -p 80:3000 --name big-bird react-app:1.0.0`
+
+View logs
+`docker logs -n 10 big-bird`
+
+View containers which will tell us about the ports
+`docker ps`
+
+In the host machine, can now go to `http://localhost:<host port>` and we should see the React app working! Eg. `http://localhost:80`
 
 ### Image Layers
 View image layers with `docker history react-app`
@@ -108,6 +133,8 @@ To load an image from a file, run
 `docker image load -i react-app.tar`
 
 Warning: if you are continuing to build images, be sure that the (large) `tar` file is not being added to the build, this could otherwise cause unnecessary slowdowns and bloat.
+
+## Working with Containers
 
 # Available Scripts
 
