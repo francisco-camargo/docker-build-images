@@ -5,7 +5,7 @@ RUN addgroup app && adduser -S -G app app
     # Let's add a user
     # Run any commands that we would normally run in a terminal session
     # This command is run when the image is being built; it is a buildtime instruction
-USER app
+USER root
     # Switch to this user
     # can check the current user with the whoami terminal command
     # run ls -l to view permissions of each file
@@ -13,6 +13,8 @@ USER app
         # commands that remain will be run as the app user
 WORKDIR /app
     # Make /app the working directory of the image
+RUN mkdir data
+    # Make a folder which the app user will have write permissions to
 COPY package.json .
 RUN npm install
 COPY . .

@@ -136,6 +136,92 @@ Warning: if you are continuing to build images, be sure that the (large) `tar` f
 
 ## Working with Containers
 
+### Docker Execute
+Execute command in a running container
+`docker exec big-bird ls`
+This will print out the contents of the working directory (which was set in `Dockerfile` via `WORKDIR`)
+
+Note: `docker run` starts a *new* container and runs a command
+
+Let's instead start an interactive shell instance in this same container
+`docker exec -it big-bird sh`
+
+### Stopping and Starting Containers
+`docker stop big-bird`
+`docker start big-bird`
+Where as `docker run` kick-off a new instance of a container from an image, `docker start` restarts a stopped container.
+
+### Remove Containers
+`docker container rm big-bird`
+`docker rm big-bird`
+But you cannot remove a running container, so `docker stop` the container and then `docker rm`. Or we could force the removal
+`docker rm -f big-bird`
+
+To [stop](https://stackoverflow.com/questions/45357771/stop-and-remove-all-docker-containers) all active containers
+`docker stop $(docker ps -a -q)`
+then run `docker container prune`
+
+### Persisting Data using Volumes
+Persist files using space in the host machine, that is, `Volumes`
+`docker volume create <folder name>`
+`docker volume create app-data`
+Get meta-data of a volume
+`docker volume inspect <folder name>`
+This will tell you the `Mountpoint`, that is, the location on the host machine where this `Volume` is. 
+
+On a Windows machine using WSL with Docker running, I found volumes in `\\wsl.localhost\docker-desktop-data\mnt\wslg\distro\data\docker\volumes`, but you may have took look around as there are varied [possibilities](https://stackoverflow.com/questions/43181654/locating-data-volumes-in-docker-desktop-windows).
+
+Let's map the volume in the host machine to a location in the container of interest, we do this with the `-v` option
+`docker run -d -p <host port>:<container port> -v <volume>:<container folder> <container name>`
+`docker run -d -p 4000:3000 -v app-data:/app/data react-app:1.0.0`
+If either the volume or the target container folder does not exist, they will be created when this command is executed. The trouble with this, is the Docker will only give write permissions to the `<container folder>` to the `root` user.
+
+So let's circumvent this by making the desired `/data` directory in the `Dockerfile` after `USER app`. This way, the `app` user has write permissions. We do this by adding a `RUN mkdir data` line right after the line `WORKDIR /app`.
+
+So build a new image now that we have modified the `Dockerfile` 
+`docker build -t react-app .`
+and run it
+`docker run -d -p 5000:3000 -v app-data:/app/data react-app`
+
+Let's open up shell within this new container
+`docker exec -it <id> sh`
+`docker exec -it 75a sh`
+We can immediately see that there is a `/data` directory if we run `ls`. Let's create a text file and place it within `/app/data`
+`echo data > data/data.txt`
+
+The punch-line: even if this container gets deleted, the files inside of `/app/data` will still exist! They persist in the local host (wherever `Mountpoint` is). Furthermore, you can share a volume across multiple containers.
+
+#### Sharing Source Code with a Container
+If we want to push to production, you should always make a new image of the most updated version of the project. However, during development we need a way to make changes to the source code and have them reflected within the containerized application. To do this we will use volumes to map the current working directory of the host which contains the source code to the working directory of the container. With these two directories linked, when a change is made to the source code in the host machine it will instantly be reflected within the container.
+
+Set user to `root` to make sure permissions isn't the problem.
+
+`docker run -d -p 5001:3000 -v "$(pwd):/app" react-app`
+Syntax may [vary](https://stackoverflow.com/questions/41485217/mount-current-directory-as-a-volume-in-docker-on-windows-10) depending on the host operating system.
+
+Seems like running `docker` within VSCode which thus uses WSL2 has problems. So let's try sharing code by running `docker run` from Windows PowerShell
+
+From [Mosh](https://forum.codewithmosh.com/t/help-im-unable-to-map-a-local-working-dir-to-container/15775/2) [forum](https://forum.codewithmosh.com/t/using-docker-run-with-pwd-on-windows-powershell/7262/2), added `.env` file and rebuild image.
+
+Have not been able to get this to work...
+
+### Copy Files Between the Host and the Containers
+
+Copy a file from a container to the host
+`docker cp <container id>:<filepath> <host path>`
+`docker cp 849:/app/data/data.txt .`
+Where `.` point to the current directory in the host.
+
+The reverse is also possible, move a file from the host into a container. So for example, from the host working directory run
+`echo hello > secret.txt`
+`docker cp secret.txt 849:/app`
+At this point we have made a file and moved it. We can verify by interacting with the container
+`docker exec -it 849 sh`
+`ls`
+and we will see `secret.txt` listed.
+
+Note that this exemplifies how we can handle a secret file which must not live in the code repo but is needed within the container in order for the application to function.
+
 # Available Scripts
 
 In the project directory, you can run:
