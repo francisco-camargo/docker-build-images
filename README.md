@@ -110,7 +110,7 @@ Warning: the `latest` tag may end up not actually being the latest version of th
 
 ### Push Images to dockerhub
 Create a repository on [dockerhub](hub.docker.com) and whatever the name of the repo is, use that as the tag to the image. For example, I have created the repo `franciscocamargo/react-app` so tag an image as
-`docker image tag b50 franciscocamargo/react-app`
+`docker image tag b50 franciscocamargo/react-app:1.0.0`
 
 You will end up with multiple tags that point to the same image; you can see this by observing that when you run `docker images` there are multiple rows (tags) with the same `IMAGE ID`.
 
@@ -165,6 +165,8 @@ then run `docker container prune`
 Persist files using space in the host machine, that is, `Volumes`
 `docker volume create <folder name>`
 `docker volume create app-data`
+List volumes
+`docker volume ls`
 Get meta-data of a volume
 `docker volume inspect <folder name>`
 This will tell you the `Mountpoint`, that is, the location on the host machine where this `Volume` is. 
@@ -202,6 +204,10 @@ Syntax may [vary](https://stackoverflow.com/questions/41485217/mount-current-dir
 Seems like running `docker` within VSCode which thus uses WSL2 has problems. So let's try sharing code by running `docker run` from Windows PowerShell
 
 From [Mosh](https://forum.codewithmosh.com/t/help-im-unable-to-map-a-local-working-dir-to-container/15775/2) [forum](https://forum.codewithmosh.com/t/using-docker-run-with-pwd-on-windows-powershell/7262/2), added `.env` file and rebuild image.
+
+Can use a relative path, but this did not remedy the problem
+`docker run -d -p 1001:3000 -v ~/Desktop/git/docker-build-images:/app react-app`
+The app runs but it does not have a live feed of the source code in the host.
 
 Have not been able to get this to work...
 
