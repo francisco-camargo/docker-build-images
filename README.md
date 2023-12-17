@@ -160,6 +160,12 @@ But you cannot remove a running container, so `docker stop` the container and th
 To [stop](https://stackoverflow.com/questions/45357771/stop-and-remove-all-docker-containers) all active containers
 `docker stop $(docker ps -a -q)`
 then run `docker container prune`
+or to remove all containers
+`docker container rm -f $(docker container ls -aq)`
+
+Then to deal with the images
+`docker image rm $(docker image ls -q)`
+However, if multiples tags reference the same `IMAGE ID`, you will have to remove those manually.
 
 ### Persisting Data using Volumes
 Persist files using space in the host machine, that is, `Volumes`
