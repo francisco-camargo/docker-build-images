@@ -18,21 +18,30 @@ Similar to `.gitignore`, the `.dockerignore` file is used to excludes files from
 ## Building and Running Images
 
 Build an image
+
 `docker build --tag react-app .`
 
 List images
+
 `docker image ls`
+
 or
+
 `docker images`
 
 View running processes
+
 `docker ps`
+
 View all processes with `-a`, including stopped once with
+
 `docker ps -a`
 
 ### Run Images
 Run image
+
 `docker run -it react-app sh`
+
 We use `sh` to use shell because the image we have defined does not have bach installed. Use `-it` to run image in interactive move. To exit the image use the `exit` command or the shortcut `Ctrl+D` (or `Ctrl+C`?). [Guide](https://vsupalov.com/exit-docker-container/), also talks about deamon mode.
 
 Instead of running in interactive mode, we could instead direct the `docker run` command to run `npm start`
