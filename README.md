@@ -98,6 +98,7 @@ Use explicit tags to keep track of images. This is critical when images will be 
 
 Can tag an image while building it
 `docker build -t <image name>:<tag> .`
+
 `docker build -t react-app:1.0.0 .`
 
 To tag an image after building it
@@ -124,12 +125,14 @@ And push
 
 To save an image to a `tar` file, run
 `docker image save -o <output file name> <id>`
+
 `docker image save -o react-app.tar react-app:1.0.0`
 
 If we look inside the resulting `tar` file we will see folders corresponding to the individual layers of the image.
 
 To load an image from a file, run
 `docker image load -i <filename>`
+
 `docker image load -i react-app.tar`
 
 Warning: if you are continuing to build images, be sure that the (large) `tar` file is not being added to the build, this could otherwise cause unnecessary slowdowns and bloat.
@@ -148,11 +151,13 @@ Let's instead start an interactive shell instance in this same container
 
 ### Stopping and Starting Containers
 `docker stop big-bird`
+
 `docker start big-bird`
 Where as `docker run` kick-off a new instance of a container from an image, `docker start` restarts a stopped container.
 
 ### Remove Containers
 `docker container rm big-bird`
+
 `docker rm big-bird`
 But you cannot remove a running container, so `docker stop` the container and then `docker rm`. Or we could force the removal
 `docker rm -f big-bird`
@@ -169,7 +174,9 @@ However, if multiples tags reference the same `IMAGE ID`, you will have to remov
 
 ### Persisting Data using Volumes
 Persist files using space in the host machine, that is, `Volumes`
+
 `docker volume create <folder name>`
+
 `docker volume create app-data`
 List volumes
 `docker volume ls`
@@ -181,6 +188,7 @@ On a Windows machine using WSL with Docker running, I found volumes in `\\wsl.lo
 
 Let's map the volume in the host machine to a location in the container of interest, we do this with the `-v` option
 `docker run -d -p <host port>:<container port> -v <volume>:<container folder> <container name>`
+
 `docker run -d -p 4000:3000 -v app-data:/app/data react-app:1.0.0`
 If either the volume or the target container folder does not exist, they will be created when this command is executed. The trouble with this, is the Docker will only give write permissions to the `<container folder>` to the `root` user.
 
@@ -193,8 +201,10 @@ and run it
 
 Let's open up shell within this new container
 `docker exec -it <id> sh`
+
 `docker exec -it 75a sh`
 We can immediately see that there is a `/data` directory if we run `ls`. Let's create a text file and place it within `/app/data`
+
 `echo data > data/data.txt`
 
 The punch-line: even if this container gets deleted, the files inside of `/app/data` will still exist! They persist in the local host (wherever `Mountpoint` is). Furthermore, you can share a volume across multiple containers.
@@ -221,14 +231,17 @@ Have not been able to get this to work...
 
 Copy a file from a container to the host
 `docker cp <container id>:<filepath> <host path>`
+
 `docker cp 849:/app/data/data.txt .`
 Where `.` point to the current directory in the host.
 
 The reverse is also possible, move a file from the host into a container. So for example, from the host working directory run
 `echo hello > secret.txt`
+
 `docker cp secret.txt 849:/app`
 At this point we have made a file and moved it. We can verify by interacting with the container
 `docker exec -it 849 sh`
+
 `ls`
 and we will see `secret.txt` listed.
 
