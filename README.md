@@ -5,6 +5,16 @@ Getting Started with Create React App
 
 Francisco Camargo
 
+# Quick Run Instructions
+
+From within the local repo directory, do the following:
+* Build Docker image
+    * `docker build --tag react-app .`
+* Run container in detached mode, name it, and assign port
+    * `docker run -d -p 80:3000 --name big-bird react-app`
+* Observe app working by, in host machine, going to
+    * `http://localhost/80`
+
 # Docker
 
 Docker provides [samples](https://docs.docker.com/samples/) of Dockerfiles.
