@@ -26,10 +26,11 @@ ENV API_URL=http://api.myapp.com/
 EXPOSE 3000
     # To tell what port this container will be listening on
 CMD ["npm", "start"]
-    # Command instruction in "Exec form"; this avoids spinning up another shell process
+    # Command instruction in "Exec form" (best practice, instead of "Shell form"); this avoids spinning up another shell process
     # only the last CMD in a Dockerfile will take effect
     # CMD is a runtime instruction; it is executed when starting a container
+    # In contrast, RUN commands run at build time; when the image is being built
 # ENTRYPOINT ["npm", "start"]
     # could use this instead of CMD, this is nice because it takes a bit more
-        # effort to accidentaly do something else, ie. pass a CMD option as a suffix
+        # effort to accidentally do something else, ie. pass a CMD option as a suffix
         # when running docker run which would override the CMD in this Dockerfile

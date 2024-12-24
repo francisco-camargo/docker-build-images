@@ -1,5 +1,5 @@
 Getting Started with Create React App
-====================
+=====================================
 
 ***This project is based on the course [The Ultimate Docker Course](https://codewithmosh.com/p/the-ultimate-docker-course) by Mosh Hamedani. This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).***
 
@@ -11,7 +11,7 @@ Docker provides [samples](https://docs.docker.com/samples/) of Dockerfiles.
 
 An image can be stored in any registry, not just DockerHub. Consequently, a `Dockerfile` can point to an image (using `FROM`) from any registry.
 
-View this projects `Dockerfile` as example with comments.
+View this project's `Dockerfile` as example with comments.
 
 Similar to `.gitignore`, the `.dockerignore` file is used to excludes files from being added to the image we will build.
 
@@ -38,11 +38,14 @@ View all processes with `-a`, including stopped once with
 `docker ps -a`
 
 ### Run Images
+
 Run image
 
 `docker run -it react-app sh`
 
-We use `sh` to use shell because the image we have defined does not have bach installed. Use `-it` to run image in interactive move. To exit the image use the `exit` command or the shortcut `Ctrl+D` (or `Ctrl+C`?). [Guide](https://vsupalov.com/exit-docker-container/), also talks about deamon mode.
+We use `sh` to use shell because the image we have defined does not have `bash` installed.
+
+Use `-it` to run image in interactive move. To exit the image use the `exit` command or the shortcut `Ctrl+D` (or `Ctrl+C`?). [Guide](https://vsupalov.com/exit-docker-container/), also talks about deamon mode.
 
 Instead of running in interactive mode, we could instead direct the `docker run` command to run `npm start`
 
@@ -50,11 +53,12 @@ Instead of running in interactive mode, we could instead direct the `docker run`
 
 Exit with `Ctrl+C`
 
-If we don't want to have to add the `npm start` suffix to the `docker run` command, we can add this to the `Dockerfile`
+If we don't want to have to add the `npm start` suffix to the `docker run` command, we can add this to the `Dockerfile`.
 
 `--name` option let's us assign the name of a container ourselves
 
 #### Detached Mode
+
 Can run containers in detached mode (in the background) such that you can still work in the terminal
 
 `docker run -d react-app`
@@ -62,6 +66,7 @@ Can run containers in detached mode (in the background) such that you can still 
 This let's us spin up multiple containers in the background using the same terminal
 
 #### Container Logs
+
 `docker logs --help`
 
 The `-f` option to follow lets us see logs in real-time
@@ -72,12 +77,14 @@ The `-f` option to follow lets us see logs in real-time
 `-t` adds timestamps to each line
 
 ### Ports
+
 Having run `npm start` we see
 
 ```bash
   Local:            http://localhost:3000
   On Your Network:  http://172.17.0.2:3000
 ```
+
 By looking at Local, we see that the webserver started on port 3000. This is port 3000 of the container, not localhost. That means, if we go to this address in the browser, we won't see our application.
 
 `docker run -d -p <host port>:<container port> --name <container name> <id>`
@@ -95,6 +102,7 @@ View containers which will tell us about the ports
 In the host machine, can now go to `http://localhost:<host port>` and we should see the React app working! Eg. `http://localhost:80`
 
 ### Image Layers
+
 View image layers with
 
 `docker history react-app`
@@ -104,7 +112,8 @@ To rebuild using cached layers (to avoid long wait times in running `docker run`
 In summary, instructions that change infrequently should be towards the top of the `Dockerfile`, and vice-versa.
 
 ### Remove Images
-As we rebuilt the same images, older images remained but lost their tag. You can see this by running 
+
+As we rebuilt the same images, older images remained but lost their tag. You can see this by running
 
 `docker images`
 
@@ -123,6 +132,7 @@ will remove imaged without tags. To remove specific images, run
 Where `<id>` is either the tag (`REPOSITORY`) or `IMAGE ID` (can use first 3 characters of the ID)
 
 ### Explicit Tags
+
 Use explicit tags to keep track of images. This is critical when images will be used in production.
 
 Can tag an image while building it
@@ -133,7 +143,7 @@ Can tag an image while building it
 
 To tag an image after building it
 
-`docker image tag <old id> react-app:<new tag>` 
+`docker image tag <old id> react-app:<new tag>`
 
 where `<old id>` can be the current tag (eg. `react-app:latest`) or the `IMAGE ID`
 
@@ -142,6 +152,7 @@ Warning: the `latest` tag may end up not actually being the latest version of th
 ## Sharing Images
 
 ### Push Images to dockerhub
+
 Create a repository on [dockerhub](hub.docker.com) and whatever the name of the repo is, use that as the tag to the image. For example, I have created the repo `franciscocamargo/react-app` so tag an image as
 
 `docker image tag b50 franciscocamargo/react-app:1.0.0`
@@ -177,6 +188,7 @@ Warning: if you are continuing to build images, be sure that the (large) `tar` f
 ## Working with Containers
 
 ### Docker Execute
+
 Execute command in a running container
 
 `docker exec big-bird ls`
@@ -198,6 +210,7 @@ Let's instead start an interactive shell instance in this same container
 Where as `docker run` kick-off a new instance of a container from an image, `docker start` restarts a stopped container.
 
 ### Remove Containers
+
 `docker container rm big-bird`
 
 `docker rm big-bird`
@@ -222,6 +235,7 @@ Then to deal with the images
 However, if multiples tags reference the same `IMAGE ID`, you will have to remove those manually.
 
 ### Persisting Data using Volumes
+
 Persist files using space in the host machine, that is, `Volumes`
 
 `docker volume create <folder name>`
@@ -236,7 +250,7 @@ Get meta-data of a volume
 
 `docker volume inspect <folder name>`
 
-This will tell you the `Mountpoint`, that is, the location on the host machine where this `Volume` is. 
+This will tell you the `Mountpoint`, that is, the location on the host machine where this `Volume` is.
 
 On a Windows machine using WSL with Docker running, I found volumes in `\\wsl.localhost\docker-desktop-data\mnt\wslg\distro\data\docker\volumes`, but you may have took look around as there are varied [possibilities](https://stackoverflow.com/questions/43181654/locating-data-volumes-in-docker-desktop-windows).
 
@@ -250,7 +264,7 @@ If either the volume or the target container folder does not exist, they will be
 
 So let's circumvent this by making the desired `/data` directory in the `Dockerfile` after `USER app`. This way, the `app` user has write permissions. We do this by adding a `RUN mkdir data` line right after the line `WORKDIR /app`.
 
-So build a new image now that we have modified the `Dockerfile` 
+So build a new image now that we have modified the `Dockerfile`
 
 `docker build -t react-app .`
 
@@ -271,6 +285,7 @@ We can immediately see that there is a `/data` directory if we run `ls`. Let's c
 The punch-line: even if this container gets deleted, the files inside of `/app/data` will still exist! They persist in the local host (wherever `Mountpoint` is). Furthermore, you can share a volume across multiple containers.
 
 #### Sharing Source Code with a Container
+
 If we want to push to production, you should always make a new image of the most updated version of the project. However, during development we need a way to make changes to the source code and have them reflected within the containerized application. To do this we will use volumes to map the current working directory of the host which contains the source code to the working directory of the container. With these two directories linked, when a change is made to the source code in the host machine it will instantly be reflected within the container.
 
 Set user to `root` to make sure permissions isn't the problem.
@@ -315,7 +330,7 @@ and we will see `secret.txt` listed.
 
 Note that this exemplifies how we can handle a secret file which must not live in the code repo but is needed within the container in order for the application to function.
 
-# Available Scripts
+# Available Scripts (FC: I didn't write this section)
 
 In the project directory, you can run:
 
@@ -352,7 +367,7 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-# Learn More
+# Learn More (FC: I didn't write this section)
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
