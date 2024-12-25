@@ -8,12 +8,13 @@ Francisco Camargo
 # Quick Run Instructions
 
 From within the local repo directory, do the following:
+
 * Build Docker image
-    * `docker build --tag react-app .`
+  * `docker build --tag react-app .`
 * Run container in detached mode, name it, and assign port
-    * `docker run -d -p 80:3000 --name big-bird react-app`
+  * `docker run -d -p 80:3000 --name big-bird react-app`
 * Observe app working by, in host machine, going to
-    * `http://localhost/80`
+  * `http://localhost/80`
 
 # Docker
 
@@ -65,7 +66,9 @@ Exit with `Ctrl+C`
 
 If we don't want to have to add the `npm start` suffix to the `docker run` command, we can add this to the `Dockerfile`.
 
-`--name` option let's us assign the name of a container ourselves
+`--name` option let's us assign the name of a container ourselves, as in
+`docker run --name <container name> <image name>`
+`docker run --name big-bird react-app`
 
 #### Detached Mode
 
@@ -79,10 +82,11 @@ This let's us spin up multiple containers in the background using the same termi
 
 `docker logs --help`
 
-The `-f` option to follow lets us see logs in real-time
+The `-f` option to follow, allows us see logs in real-time
+
 `-n` let's us see the last `n` lines
 
-`docker logs -n 10 <identifier>`
+`docker logs -n 10 <container identifier>`
 
 `-t` adds timestamps to each line
 
@@ -199,7 +203,7 @@ Warning: if you are continuing to build images, be sure that the (large) `tar` f
 
 ### Docker Execute
 
-Execute command in a running container
+Execute command in a *running* container
 
 `docker exec big-bird ls`
 
