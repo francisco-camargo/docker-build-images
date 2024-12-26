@@ -215,32 +215,53 @@ Let's instead start an interactive shell instance in this same container
 
 `docker exec -it big-bird sh`
 
+can than run, for example, Linux commands such as `ls`. To exit this shell we type the `exit` command.
+
 ### Stopping and Starting Containers
 
-`docker stop big-bird`
+To start a container (that already exists)
 
-`docker start big-bird`
+`docker start <container name>`
 
-Where as `docker run` kick-off a new instance of a container from an image, `docker start` restarts a stopped container.
+eg. `docker start big-bird`
+
+To stop a running container
+
+`docker stop <container name>`
+
+eg. `docker stop big-bird`
+
+Where as `docker run` kicks-off a new instance of a container from an image, `docker start` restarts a stopped container.
 
 ### Remove Containers
 
-`docker container rm big-bird`
+To get rid of a container, can do either
 
-`docker rm big-bird`
+`docker container rm <container name>`
+
+eg. `docker container rm big-bird`
+
+or
+
+`docker rm <container name>`
 
 But you cannot remove a running container, so `docker stop` the container and then `docker rm`. Or we could force the removal
 
-`docker rm -f big-bird`
+`docker rm -f <container name>`
 
 To [stop](https://stackoverflow.com/questions/45357771/stop-and-remove-all-docker-containers) all active containers
 
 `docker stop $(docker ps -a -q)`
 
-then run `docker container prune`
-or to remove all containers
+then to remove all stopped containers, run
+
+`docker container prune`
+
+Or to remove all containers
 
 `docker container rm -f $(docker container ls -aq)`
+
+### Remove Images
 
 Then to deal with the images
 
@@ -268,6 +289,8 @@ This will tell you the `Mountpoint`, that is, the location on the host machine w
 
 On a Windows machine using WSL with Docker running, I found volumes in `\\wsl.localhost\docker-desktop-data\mnt\wslg\distro\data\docker\volumes`, but you may have took look around as there are varied [possibilities](https://stackoverflow.com/questions/43181654/locating-data-volumes-in-docker-desktop-windows).
 
+If you are on Mac; Docker works on a Linux VM, so whatever address `docker volume inspect` gives you, it is an address within that VM; you will not find it in your Mac directory.
+
 Let's map the volume in the host machine to a location in the container of interest, we do this with the `-v` option
 
 `docker run -d -p <host port>:<container port> -v <volume>:<container folder> <container name>`
@@ -288,15 +311,17 @@ and run it
 
 Let's open up shell within this new container
 
-`docker exec -it <id> sh`
+`docker exec -it <container id> sh`
 
-`docker exec -it 75a sh`
+eg. `docker exec -it 75a sh`
 
-We can immediately see that there is a `/data` directory if we run `ls`. Let's create a text file and place it within `/app/data`
+We can immediately see that there is a `/data` directory if we run `ls`, as expected given the `Dockerfile`.
+
+Let's create a text file and place it within `/app/data`
 
 `echo data > data/data.txt`
 
-The punch-line: even if this container gets deleted, the files inside of `/app/data` will still exist! They persist in the local host (wherever `Mountpoint` is). Furthermore, you can share a volume across multiple containers.
+The punch-line: even if this container gets deleted, the files inside of `/app/data` will still exist! They persist in the local host (wherever `Mountpoint` is). So you can create a new container of the same image and it will already have `data/data.txt`. Furthermore, you can share a volume across multiple containers!
 
 #### Sharing Source Code with a Container
 

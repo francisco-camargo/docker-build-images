@@ -12,7 +12,7 @@ USER root
     # By switching to the app user here, all the Dockerfile
         # commands that remain will be run as the app user
 WORKDIR /app
-    # Make /app the working directory of the image
+    # Create the /app directory and make it the working directory of the container
 RUN mkdir data
     # Make a folder which the app user will have write permissions to
 COPY package.json .
