@@ -1,5 +1,5 @@
-Getting Started with Create React App
-=====================================
+Docker Fundamentals
+===================
 
 ***This project is based on the course [The Ultimate Docker Course](https://codewithmosh.com/p/the-ultimate-docker-course) by Mosh Hamedani. This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).***
 
@@ -16,6 +16,17 @@ From within the local repo directory, do the following:
 * Observe app working by, in host machine, going to
   * `http://localhost/80`
 
+# Introduction
+
+With this repo we will run a simple containarized application which we can access via the browser.
+
+We will learn about
+
+* Building Images
+* Running Images to initialize Containers
+* Sharing Images
+* Working with existing Containers
+
 # Docker
 
 Docker provides [samples](https://docs.docker.com/samples/) of Dockerfiles.
@@ -26,9 +37,9 @@ View this project's `Dockerfile` as example with comments.
 
 Similar to `.gitignore`, the `.dockerignore` file is used to excludes files from being added to the image we will build.
 
-## Building and Running Images
+## Docker Images
 
-Build an image
+### Building Images
 
 `docker build --tag react-app .`
 
@@ -48,9 +59,9 @@ View all processes with `-a`, including stopped once with
 
 `docker ps -a`
 
-### Run Images
+### Run Images to Initialize Containers
 
-Run image
+Run image to initialize a container
 
 `docker run -it react-app sh`
 
@@ -70,7 +81,7 @@ If we don't want to have to add the `npm start` suffix to the `docker run` comma
 `docker run --name <container name> <image name>`
 `docker run --name big-bird react-app`
 
-#### Detached Mode
+### Detached Mode
 
 Can run containers in detached mode (in the background) such that you can still work in the terminal
 
@@ -78,7 +89,7 @@ Can run containers in detached mode (in the background) such that you can still 
 
 This let's us spin up multiple containers in the background using the same terminal
 
-#### Container Logs
+### Container Logs
 
 `docker logs --help`
 
@@ -101,7 +112,7 @@ Having run `npm start` we see
 
 By looking at Local, we see that the webserver started on port 3000. This is port 3000 of the container, not localhost. That means, if we go to this address in the browser, we won't see our application.
 
-`docker run -d -p <host port>:<container port> --name <container name> <id>`
+`docker run -d -p <host port>:<container port> --name <container name> <image id>`
 
 `docker run -d -p 80:3000 --name big-bird react-app:1.0.0`
 
