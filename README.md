@@ -275,7 +275,7 @@ Persist files using space in the host machine, that is, `Volumes`
 
 `docker volume create <folder name>`
 
-`docker volume create app-data`
+eg. `docker volume create app-data`
 
 List volumes
 
@@ -285,9 +285,32 @@ Get meta-data of a volume
 
 `docker volume inspect <folder name>`
 
-This will tell you the `Mountpoint`, that is, the location on the host machine where this `Volume` is.
+eg. `docker volume inspect app-data` returns
 
-On a Windows machine using WSL with Docker running, I found volumes in `\\wsl.localhost\docker-desktop-data\mnt\wslg\distro\data\docker\volumes`, but you may have took look around as there are varied [possibilities](https://stackoverflow.com/questions/43181654/locating-data-volumes-in-docker-desktop-windows).
+```json
+[
+    {
+        "CreatedAt": "2024-12-31T16:12:58Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/app-data/_data",
+        "Name": "app-data",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+
+`Driver` being `"local"` tells us that this volume lives on the host machine. `Mountpoint` is thus the location on the host machine where this `Volume` is.
+
+Note: we created this volume independent of having any containers running.
+
+On a Windows machine using WSL with Docker running, I found volumes in
+
+* `\\wsl.localhost\docker-desktop-data\mnt\wslg\distro\data\docker\volumes`
+* `\\wsl.localhost\docker-desktop\mnt\docker-desktop-disk\data\docker\volumes`
+
+but you may have to look around as there are varied [possibilities](https://stackoverflow.com/questions/43181654/locating-data-volumes-in-docker-desktop-windows).
 
 If you are on Mac; Docker works on a Linux VM, so whatever address `docker volume inspect` gives you, it is an address within that VM; you will not find it in your Mac directory.
 
@@ -297,7 +320,7 @@ Let's map the volume in the host machine to a location in the container of inter
 
 `docker run -d -p 4000:3000 -v app-data:/app/data react-app:1.0.0`
 
-If either the volume or the target container folder does not exist, they will be created when this command is executed. The trouble with this, is the Docker will only give write permissions to the `<container folder>` to the `root` user.
+If either the volume or the target container folder does not exist, they will be created when this command is executed. The trouble with this, is that Docker will only give write permissions to the `<container folder>` to the `root` user.
 
 So let's circumvent this by making the desired `/data` directory in the `Dockerfile` after `USER app`. This way, the `app` user has write permissions. We do this by adding a `RUN mkdir data` line right after the line `WORKDIR /app`.
 
