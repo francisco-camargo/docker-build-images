@@ -346,7 +346,9 @@ Let's create a text file and place it within `/app/data`
 
 The punch-line: even if this container gets deleted, the files inside of `/app/data` will still exist! They persist in the local host (wherever `Mountpoint` is). So you can create a new container of the same image and it will already have `data/data.txt`. Furthermore, you can share a volume across multiple containers!
 
-#### Sharing Source Code with a Container
+### Sharing Source Code with a Container
+
+TLDR: I have not been able to get bare Volumes to work to be able to code with them, but [here](https://github.com/francisco-camargo/dev-workflow/blob/main/src/vscode/README.md#docker-dev-environment), in my VSCode guide I suggest an alternate solution to work with code with containers via the VSCode "Open a Remote Window" button.
 
 If we want to push to production, you should always make a new image of the most updated version of the project. However, during development we need a way to make changes to the source code and have them reflected within the containerized application. To do this we will use volumes to map the current working directory of the host which contains the source code to the working directory of the container. With these two directories linked, when a change is made to the source code in the host machine it will instantly be reflected within the container.
 
